@@ -10,18 +10,16 @@ return new class extends Migration
     {
         Schema::create('alumni', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('program_studi_id')->constrained('program_studi')->onDelete('restrict');
+            $table->string('kode_pt');
+            $table->string('kode_prodi');
             $table->string('nim', 20)->unique();
+            $table->string('nik', 50)->unique();
+            $table->string('npwp', 100)->unique()->nullable();
             $table->string('nama_lengkap');
-            $table->enum('jenis_kelamin', ['L', 'P']);
-            $table->string('tempat_lahir');
             $table->date('tanggal_lahir');
-            $table->string('no_hp', 15)->nullable();
-            $table->string('email')->nullable();
-            $table->text('alamat')->nullable();
+            $table->string('no_hp', 15);
+            $table->string('email');
             $table->string('tahun_lulus', 4);
-            $table->decimal('ipk', 3, 2)->nullable();
             $table->timestamps();
         });
     }

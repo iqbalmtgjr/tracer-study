@@ -8,20 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('jawaban', function (Blueprint $table) {
+        Schema::create('jawaban_grid', function (Blueprint $table) {
             $table->id();
             $table->foreignId('responden_id')->constrained('responden')->onDelete('cascade');
             $table->foreignId('pertanyaan_id')->constrained('pertanyaan')->onDelete('cascade');
-            $table->foreignId('opsi_jawaban_id')->nullable()->constrained('opsi_jawaban')->onDelete('cascade');
-            $table->text('jawaban_text')->nullable(); // untuk text/textarea
-            $table->json('jawaban_multiple')->nullable(); // untuk checkbox multiple
-            $table->text('jawaban_tambahan')->nullable(); // untuk input "Lainnya, sebutkan"
+            $table->foreignId('pertanyaan_grid_id')->constrained('pertanyaan_grid')->onDelete('cascade');
+            $table->string('column_group'); // A atau B
+            $table->integer('nilai'); // nilai 1-5
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('jawaban');
+        Schema::dropIfExists('jawaban_grid');
     }
 };

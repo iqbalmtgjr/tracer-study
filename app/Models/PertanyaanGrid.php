@@ -6,27 +6,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class OpsiJawaban extends Model
+class PertanyaanGrid extends Model
 {
     use HasFactory;
 
-    protected $table = 'opsi_jawaban';
+    protected $table = 'pertanyaan_grid';
 
     protected $fillable = [
         'pertanyaan_id',
-        'kode_opsi',
-        'opsi',
-        'nilai',
+        'row_label',
+        'kode_row',
+        'column_group',
         'urutan',
-        'has_input',
-        'input_type',
-        'trigger_question',
-    ];
-
-    protected $casts = [
-        'nilai' => 'integer',
-        'urutan' => 'integer',
-        'has_input' => 'boolean',
     ];
 
     public function pertanyaan(): BelongsTo

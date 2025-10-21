@@ -11,6 +11,8 @@ return new class extends Migration
         Schema::create('pertanyaan', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kuesioner_id')->constrained('kuesioner')->onDelete('cascade');
+            $table->foreignId('parent_id')->nullable()->constrained('pertanyaan')->onDelete('cascade'); // untuk sub-pertanyaan
+            $table->string('kode_pertanyaan')->nullable(); // kode seperti f8, f502, f1101
             $table->text('pertanyaan');
             $table->enum('tipe_pertanyaan', [
                 'text',
@@ -19,11 +21,15 @@ return new class extends Migration
                 'checkbox',
                 'select',
                 'date',
-                'number'
+                'number',
+                'month', // untuk input bulan
+                'grid' // untuk pertanyaan matrix seperti kompetensi
             ]);
-            $table->boolean('is_required')->default(true);
+            $table->boolean('is_required')->default(false);
+            $table->boolean('allow_multiple')->default(false); // untuk checkbox multiple
             $table->integer('urutan')->default(0);
-            $table->string('kondisi_tampil')->nullable(); // untuk conditional question
+            $table->json('kondisi_tampil')->nullable(); // untuk conditional logic
+            $table->text('keterangan')->nullable(); // keterangan tambahan
             $table->timestamps();
         });
     }

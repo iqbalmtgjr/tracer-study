@@ -1,9 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Livewire\QuizForm;
 
 Route::view('/', 'welcome')->name('home');
-Route::view('isi-kuesioner', 'kuesioner.form')->name('kuesioner.form');
+Route::get('isi-kuesioner', \App\Livewire\Kuesioner\Form::class)->name('kuesioner.form');
+Route::get('/kuesioner-tracer', QuizForm::class)->name('tracer.form');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');

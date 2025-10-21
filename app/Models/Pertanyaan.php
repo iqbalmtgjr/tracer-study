@@ -15,21 +15,37 @@ class Pertanyaan extends Model
 
     protected $fillable = [
         'kuesioner_id',
+        'parent_id',
+        'kode_pertanyaan',
         'pertanyaan',
         'tipe_pertanyaan',
         'is_required',
+        'allow_multiple',
         'urutan',
         'kondisi_tampil',
+        'keterangan',
     ];
 
     protected $casts = [
         'is_required' => 'boolean',
+        'allow_multiple' => 'boolean',
         'urutan' => 'integer',
+        'kondisi_tampil' => 'array',
     ];
 
     public function kuesioner(): BelongsTo
     {
         return $this->belongsTo(Kuesioner::class);
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Pertanyaan::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(Pertanyaan::class, 'parent_id');
     }
 
     public function opsiJawaban(): HasMany
@@ -40,5 +56,10 @@ class Pertanyaan extends Model
     public function jawaban(): HasMany
     {
         return $this->hasMany(Jawaban::class);
+    }
+
+    public function pertanyaanGrid(): HasMany
+    {
+        return $this->hasMany(PertanyaanGrid::class);
     }
 }

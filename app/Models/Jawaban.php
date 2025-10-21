@@ -17,6 +17,12 @@ class Jawaban extends Model
         'pertanyaan_id',
         'opsi_jawaban_id',
         'jawaban_text',
+        'jawaban_multiple',
+        'jawaban_tambahan',
+    ];
+
+    protected $casts = [
+        'jawaban_multiple' => 'array',
     ];
 
     public function responden(): BelongsTo

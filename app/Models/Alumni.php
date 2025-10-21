@@ -14,34 +14,21 @@ class Alumni extends Model
     protected $table = 'alumni';
 
     protected $fillable = [
-        'user_id',
-        'program_studi_id',
+        'kode_pt',
+        'kode_prodi',
         'nim',
+        'nik',
+        'npwp',
         'nama_lengkap',
-        'jenis_kelamin',
-        'tempat_lahir',
         'tanggal_lahir',
         'no_hp',
         'email',
-        'alamat',
         'tahun_lulus',
-        'ipk',
     ];
 
     protected $casts = [
         'tanggal_lahir' => 'date',
-        'ipk' => 'decimal:2',
     ];
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function programStudi(): BelongsTo
-    {
-        return $this->belongsTo(ProgramStudi::class);
-    }
 
     public function responden(): HasMany
     {
