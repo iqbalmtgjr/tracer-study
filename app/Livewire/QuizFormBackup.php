@@ -2,16 +2,18 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
-use App\Models\Question;
-use App\Models\UserAnswer;
 use App\Models\GridRow;
-
-
+use Livewire\Component;
+use App\Models\Provinsi;
+use App\Models\Question;
+use App\Models\Kabupaten;
+use App\Models\UserAnswer;
 use Illuminate\Support\Facades\DB;
 
 class QuizForm extends Component
 {
+    public $provinsi;
+    public $kabupaten = [];
     // Properti untuk menyimpan ID alumni yang sedang mengisi
     public $alumnusId = 1; // Ganti dengan Auth::id() atau ID alumni yang sesuai
 
@@ -28,9 +30,6 @@ class QuizForm extends Component
     // Contoh: ['Q13' => ['f1761_A' => 4, 'f1761_B' => 5, ...]]
     public $gridAnswers = [];
 
-
-
-
     public function getGridRowsGroupedProperty()
     {
         // Livewire TIDAK akan mencoba serialize properti computed ini.
@@ -39,19 +38,46 @@ class QuizForm extends Component
     }
     public function mount()
     {
-
-        // Initialize the nested property
-        $this->answers['f505_bekerja_wiraswasta'] = null;
         // Ambil semua pertanyaan, urutkan berdasarkan ID
         $this->questions = Question::with('options')->orderBy('id')->get();
+
+        // ✅ Inisialisasi provinsi sebagai collection kosong
+        $this->provinsi = Provinsi::all();
+        // ✅ Inisialisasi kabupaten sebagai collection kosong
+        $this->kabupaten = collect([]);
+
+        // ✅ OPTIONAL: Load kabupaten jika ada provinsi yang sudah dipilih sebelumnya
+        if (isset($this->answers['f5a1']) && !empty($this->answers['f5a1'])) {
+            $this->loadKabupaten($this->answers['f5a1']);
+        }
+    }
+
+    public function loadKabupaten($kodeProvinsi)
+    {
+        if ($kodeProvinsi) {
+            $this->kabupaten = Kabupaten::where('kode_provinsi', $kodeProvinsi)
+                ->orderBy('nama_kabupaten_kota')
+                ->get();
+
+            // Reset pilihan kabupaten jika provinsi berubah
+            $this->answers['f5a2'] = '';
+        } else {
+            $this->kabupaten = collect([]);
+            $this->answers['f5a2'] = '';
+        }
+
+        // ✅ PENTING: Dispatch event dengan data kabupaten
+        $this->dispatch('kabupaten-updated', kabupaten: $this->kabupaten->toArray());
     }
 
     // Metode ini dipanggil secara otomatis oleh Livewire saat ada perubahan input.
     // Kita gunakan ini untuk memastikan pertanyaan kondisional muncul/hilang.
     public function updated($field)
     {
-        // Jika ada jawaban yang berubah, validasi segera (opsional)
-        // $this->validateOnly($field); 
+        // Deteksi jika yang diupdate adalah provinsi (f5a1)
+        if ($field === 'answers.f5a1') {
+            $this->loadKabupaten($this->answers['f5a1']);
+        }
     }
 
     /**
@@ -218,7 +244,6 @@ class QuizForm extends Component
 
     public function render()
     {
-
         return view('livewire.quiz-form')->layout('layouts.master');
     }
 }

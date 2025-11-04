@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('/asset/img/icon/stkip.png') }}" type="image/png">
-
+    <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
     @stack('header')
 </head>
 
@@ -34,7 +34,7 @@
     <!-- ./wrapper -->
 
     <!-- jQuery -->
-    <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
+
     <!-- Bootstrap 4 -->
     <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <!-- AdminLTE App -->

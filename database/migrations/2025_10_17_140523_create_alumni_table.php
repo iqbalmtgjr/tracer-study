@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('nik', 50)->unique();
             $table->string('npwp', 100)->unique()->nullable();
             $table->string('nama_lengkap');
+            $table->string('tempat_lahir');
             $table->date('tanggal_lahir');
             $table->string('no_hp', 15);
             $table->string('email');

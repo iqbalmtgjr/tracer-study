@@ -11,13 +11,13 @@ class ProgramStudi extends Model
     use HasFactory;
 
     protected $table = 'program_studi';
-
+    protected $primaryKey = 'kode_program_studi';
     protected $fillable = [
         'nama_prodi',
     ];
 
     public function alumni(): HasMany
     {
-        return $this->hasMany(Alumni::class);
+        return $this->hasMany(Alumni::class, 'kode_prodi');
     }
 }

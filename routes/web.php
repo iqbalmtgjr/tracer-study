@@ -1,11 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Livewire\QuizForm;
+// use App\Livewire\QuizForm;
+// use App\Livewire\CheckBox;
+// use App\Livewire\Grid;
+use App\Livewire\Pilih;
 
 Route::view('/', 'welcome')->name('home');
 Route::get('isi-kuesioner', \App\Livewire\Kuesioner\Form::class)->name('kuesioner.form');
-Route::get('/kuesioner-tracer', QuizForm::class)->name('tracer.form');
+// Route::get('/kuesioner-tracer', QuizForm::class)->name('tracer.form');
+// Route::get('/check-box', CheckBox::class)->name('checkbox.form');
+// Route::get('/grid', Grid::class)->name('grid.form');
+Route::get('/kuesioner-tracer', Pilih::class)
+    ->middleware('tracer.verified')
+    ->name('tracer.form');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');

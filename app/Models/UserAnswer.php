@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Livewire\Alumni;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,12 +11,7 @@ class UserAnswer extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'alumnus_id',
-        'question_id',
-        'answer_value',
-        'question_code' // Disimpan untuk memudahkan query
-    ];
+    protected $guarded = [];
 
     /**
      * Relasi Inverse One-to-Many: Jawaban ini adalah untuk satu Pertanyaan.
@@ -24,12 +20,13 @@ class UserAnswer extends Model
     {
         return $this->belongsTo(Question::class);
     }
-
-    /*
-    // Jika Anda memiliki Model Alumnus/User:
-    public function alumnus(): BelongsTo
+    public function option()
     {
-        return $this->belongsTo(Alumnus::class);
+        return $this->belongsTo(Option::class, 'question_option_id');
     }
-    */
+
+    public function alumnui(): BelongsTo
+    {
+        return $this->belongsTo(Alumni::class, 'alumnus_id');
+    }
 }

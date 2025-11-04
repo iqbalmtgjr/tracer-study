@@ -55,7 +55,8 @@
                                 <select wire:model.live="filterProgramStudi" class="form-control">
                                     <option value="">Semua Program Studi</option>
                                     @foreach ($programStudi as $prodi)
-                                        <option value="{{ $prodi->id }}">{{ $prodi->nama_prodi }}</option>
+                                        <option value="{{ $prodi->kode_program_studi }}">{{ $prodi->program_studi }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>

@@ -10,6 +10,7 @@ class Kabupaten extends Model
     use HasFactory;
 
     protected $table = 'kabupaten';
+    protected $primaryKey = 'kode_kabupaten_kota';
 
     public $timestamps = false;
 

@@ -10,6 +10,7 @@ class Provinsi extends Model
     use HasFactory;
 
     protected $table = 'provinsi';
+    protected $primaryKey = 'kode_provinsi';
 
     public $timestamps = false;
 

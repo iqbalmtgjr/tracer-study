@@ -104,23 +104,23 @@ class Index extends Component
         $this->dispatch('show-delete-modal');
     }
 
-    public function delete()
-    {
-        $kuesioner = Kuesioner::find($this->deleteId);
+    // public function delete()
+    // {
+    //     $kuesioner = Kuesioner::find($this->deleteId);
 
-        if ($kuesioner) {
-            // Cek apakah kuesioner memiliki responden
-            if ($kuesioner->responden()->count() > 0) {
-                session()->flash('error', 'Kuesioner tidak dapat dihapus karena sudah memiliki responden.');
-            } else {
-                $kuesioner->delete();
-                session()->flash('success', 'Kuesioner berhasil dihapus.');
-            }
-        }
+    //     if ($kuesioner) {
+    //         // Cek apakah kuesioner memiliki responden
+    //         if ($kuesioner->responden()->count() > 0) {
+    //             session()->flash('error', 'Kuesioner tidak dapat dihapus karena sudah memiliki responden.');
+    //         } else {
+    //             $kuesioner->delete();
+    //             session()->flash('success', 'Kuesioner berhasil dihapus.');
+    //         }
+    //     }
 
-        $this->deleteId = null;
-        $this->dispatch('hide-delete-modal');
-    }
+    //     $this->deleteId = null;
+    //     $this->dispatch('hide-delete-modal');
+    // }
 
     public function toggleStatus($id)
     {

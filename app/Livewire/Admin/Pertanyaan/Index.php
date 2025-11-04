@@ -4,10 +4,10 @@ namespace App\Livewire\Admin\Pertanyaan;
 
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Log;
 use App\Models\Kuesioner;
-use App\Models\Pertanyaan;
-use App\Models\OpsiJawaban;
+use App\Models\Option;
+use App\Models\Question;
+
 
 class Index extends Component
 {
@@ -18,15 +18,20 @@ class Index extends Component
     public $kuesionerId;
     public $kuesioner;
     public $search = '';
-    public $pertanyaanId;
+
     public $pertanyaan;
     // HAPUS property $pertanyaans
-    public $tipe_pertanyaan = 'select';
-    public $is_required = true;
-    public $urutan = 0;
-    public $kondisi_tampil;
+    public $pertanyaanId;
+    public $question_code;
+    public $text;
+    public $input_type;
+    public $parentCcode;
+    public $parentValue;
+    public $tanyas = [];
     public $isEdit = false;
     public $deleteId;
+    public $is_custom_input;
+    public $maxValue;
 
     // Untuk opsi jawaban
     public $opsiJawaban = [];
@@ -55,7 +60,7 @@ class Index extends Component
     {
         $this->kuesionerId = $kuesioner;
         $this->kuesioner = Kuesioner::findOrFail($kuesioner);
-        $this->opsiJawaban = [];
+        // $this->opsiJawaban = [];
     }
 
     public function updatingSearch()
@@ -63,45 +68,63 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function openCreateModal()
-    {
-        $this->reset(['pertanyaanId', 'pertanyaan', 'tipe_pertanyaan', 'is_required', 'urutan', 'kondisi_tampil', 'isEdit', 'opsiJawaban']);
-        $this->opsiJawaban = [];
-        $this->is_required = true;
-        $this->tipe_pertanyaan = 'select';
-        $this->urutan = Pertanyaan::where('kuesioner_id', $this->kuesionerId)->max('urutan') + 1 ?? 1;
-        $this->resetValidation();
-        $this->dispatch('show-form-modal');
-    }
+    // public function openCreateModal()
+    // {
+    //     $this->reset(['pertanyaanId', 'pertanyaan', 'tipe_pertanyaan', 'is_required', 'urutan', 'kondisi_tampil', 'isEdit', 'opsiJawaban']);
+    //     $this->opsiJawaban = [];
+    //     $this->is_required = true;
+    //     $this->tipe_pertanyaan = 'select';
+    //     $this->urutan = Question::where('quisioner_id', $this->kuesionerId)->max('urutan') + 1 ?? 1;
+    //     $this->resetValidation();
+    //     $this->dispatch('show-form-modal');
+    // }
 
     public function openEditModal($id)
     {
-        $pertanyaan = Pertanyaan::with('opsiJawaban')->findOrFail($id);
+        $pertanyaan = Question::findOrFail($id);
         $this->pertanyaanId = $pertanyaan->id;
-        $this->pertanyaan = $pertanyaan->pertanyaan;
-        $this->tipe_pertanyaan = $pertanyaan->tipe_pertanyaan;
-        $this->is_required = $pertanyaan->is_required;
-        $this->urutan = $pertanyaan->urutan;
-        $this->kondisi_tampil = $pertanyaan->kondisi_tampil;
-        $this->opsiJawaban = $pertanyaan->opsiJawaban->map(function ($opsi) {
-            return [
-                'id' => $opsi->id,
-                'opsi' => $opsi->opsi,
-                'nilai' => $opsi->nilai,
-                'urutan' => $opsi->urutan,
-            ];
-        })->toArray();
+        $this->question_code = $pertanyaan->question_code;
+        $this->text = $pertanyaan->text;
+        $this->input_type = $pertanyaan->input_type;
+        $this->parentCcode = $pertanyaan->conditional_parent_code;
+        $this->parentValue = $pertanyaan->conditional_parent_value;
+        $this->tanyas = Question::where('quisioner_id', $this->kuesionerId)->get();
+        $idpertanyaanSyarat = Question::where('question_code', $this->parentCcode)->value('id');
+        $this->opsiJawaban = Option::where('question_id', $idpertanyaanSyarat)->get();
+        // dd($pertanyaan->id);
         $this->isEdit = true;
         $this->resetValidation();
         $this->dispatch('show-form-modal');
     }
-
+    public function openEditOpsiModal($id)
+    {
+        $pertanyaan = Question::findOrFail($id);
+        $this->pertanyaanId = $pertanyaan->id;
+        $this->question_code = $pertanyaan->question_code;
+        $this->text = $pertanyaan->text;
+        $this->input_type = $pertanyaan->input_type;
+        $this->parentCcode = $pertanyaan->conditional_parent_code;
+        $this->parentValue = $pertanyaan->conditional_parent_value;
+        $this->opsiJawaban = Option::where('question_id', $this->pertanyaanId)->get();
+        $this->maxValue = collect($this->opsiJawaban)->max('value') ?? 0;
+        // dd($pertanyaan->id);
+        $this->isEdit = true;
+        $this->resetValidation();
+        $this->dispatch('show-form-modal-opsi');
+    }
+    public function updatedParentCcode($value, $key)
+    {
+        $idpertanyaanSyarat = Question::where('question_code', $value);
+        $this->parentValue = '';
+        $this->opsiJawaban = Option::where('question_id', $idpertanyaanSyarat->value('id'))->get();
+        // dd($value, $key);
+    }
     public function save()
     {
         $this->validate();
 
         if ($this->isEdit) {
-            $pertanyaan = Pertanyaan::findOrFail($this->pertanyaanId);
+            $pertanyaan = Question::findOrFail($this->pertanyaanId);
             $pertanyaan->update([
                 'pertanyaan' => $this->pertanyaan,
                 'tipe_pertanyaan' => $this->tipe_pertanyaan,
@@ -118,7 +141,7 @@ class Index extends Component
 
             session()->flash('success', 'Pertanyaan berhasil diupdate.');
         } else {
-            $pertanyaan = Pertanyaan::create([
+            $pertanyaan = Question::create([
                 'kuesioner_id' => $this->kuesionerId,
                 'pertanyaan' => $this->pertanyaan,
                 'tipe_pertanyaan' => $this->tipe_pertanyaan,
@@ -148,7 +171,7 @@ class Index extends Component
 
     public function delete()
     {
-        $pertanyaan = Pertanyaan::find($this->deleteId);
+        $pertanyaan = Question::find($this->deleteId);
 
         if ($pertanyaan) {
             // Cek apakah pertanyaan memiliki jawaban
@@ -197,16 +220,18 @@ class Index extends Component
     public function render()
     {
         // Pindahkan query pagination ke sini
-        $pertanyaans = Pertanyaan::with('opsiJawaban')
-            ->where('kuesioner_id', $this->kuesionerId)
+        $pertanyaans = Question::where('quisioner_id', $this->kuesionerId)
             ->when($this->search, function ($query) {
-                $query->where('pertanyaan', 'like', '%' . $this->search . '%');
+                $query->where('text', 'like', '%' . $this->search . '%');
             })
-            ->orderBy('urutan')
+            ->orderBy('id')
             ->paginate(10);
 
         return view('admin.pertanyaan.index', [
-            'pertanyaans' => $pertanyaans
+            'pertanyaans' => $pertanyaans,
+            'semuaType' => Question::all()->groupBy('input_type'),
+
+
         ]);
     }
 }

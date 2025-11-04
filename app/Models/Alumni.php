@@ -20,6 +20,7 @@ class Alumni extends Model
         'nik',
         'npwp',
         'nama_lengkap',
+        'tempat_lahir',
         'tanggal_lahir',
         'no_hp',
         'email',
@@ -43,5 +44,9 @@ class Alumni extends Model
     public function riwayatPendidikan(): HasMany
     {
         return $this->hasMany(RiwayatPendidikan::class);
+    }
+    public function programstudi(): BelongsTo
+    {
+        return $this->belongsTo(ProgramStudi::class, 'kode_prodi');
     }
 }

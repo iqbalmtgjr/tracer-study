@@ -38,7 +38,7 @@ class Index extends Component
             ->where('kuesioner_id', $this->selectedKuesioner)
             ->when($this->filterProgramStudi, function ($q) {
                 $q->whereHas('alumni.programStudi', function ($query) {
-                    $query->where('id', $this->filterProgramStudi);
+                    $query->where('kode_program_studi', $this->filterProgramStudi);
                 });
             })
             ->when($this->filterTahunLulus, function ($q) {
@@ -89,11 +89,11 @@ class Index extends Component
         }
 
         // Data berdasarkan program studi
-        $programStudiData = Responden::select('alumni.program_studi_id', DB::raw('count(*) as total'))
+        $programStudiData = Responden::select('alumni.kode_prodi', DB::raw('count(*) as total'))
             ->join('alumni', 'responden.alumni_id', '=', 'alumni.id')
             ->where('responden.kuesioner_id', $this->selectedKuesioner)
             ->where('responden.status', 'selesai')
-            ->groupBy('alumni.program_studi_id')
+            ->groupBy('alumni.kode_prodi')
             ->with('alumni.programStudi')
             ->get()
             ->map(function ($item) {

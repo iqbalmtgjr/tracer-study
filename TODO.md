@@ -1,5 +1,3 @@
--   [x] Fix foreach error in pertanyaan view by adding null checks
--   [x] Fix foreach error in opsiJawaban by ensuring it's always an array
--   [x] Add error handling in render method to prevent null data issues
--   [x] Change question types to only "Pilihan Ganda" (radio) and "Essay" (textarea)
--   [ ] Test the page to ensure errors are resolved and new types work
+-   [x] Fix variable assignments in model array to use processed $tempatLahir and $tanggalLahir
+-   [x] Update date parsing in separate case to handle dd/mm/yyyy format from Excel
+-   [x] Add error handling for invalid date formats

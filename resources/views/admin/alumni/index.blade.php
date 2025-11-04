@@ -37,8 +37,12 @@
                         <div class="card-header">
                             <h3 class="card-title">Daftar Alumni</h3>
                             <div class="card-tools">
-                                <button wire:click="openCreateModal" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-plus"></i> Tambah Alumni
+                                <button wire:click="openCreateModal" class="btn btn-info shadow mr-2">
+                                    <i class="fas fa-plus mr-1"></i> Tambah Alumni
+                                </button>
+
+                                <button wire:click="openImportModal" class="btn btn-dark shadow">
+                                    <i class="fas fa-file-import mr-1"></i> Import Alumni
                                 </button>
                             </div>
                         </div>
@@ -50,40 +54,45 @@
                                 </div>
                             </div>
 
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
+                            <div class="table-responsive shadow-sm rounded">
+                                <table class="table table-striped table-hover">
+                                    <thead class="thead-dark">
                                         <tr>
-                                            <th width="5%">No</th>
+                                            <th class="text-center">No</th>
                                             <th>NIM</th>
                                             <th>Nama Lengkap</th>
-                                            <th>Program Studi</th>
-                                            <th>Tahun Lulus</th>
-                                            <th width="15%">Aksi</th>
+                                            <th>Nama Prodi</th>
+                                            <th class="text-center">Tahun Lulus</th>
+                                            <th class="text-center">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @forelse ($alumni as $index => $alum)
                                             <tr>
-                                                <td>{{ $alumni->firstItem() + $index }}</td>
+                                                <td class="text-center">{{ $alumni->firstItem() + $index }}</td>
                                                 <td>{{ $alum->nim }}</td>
                                                 <td>{{ $alum->nama_lengkap }}</td>
-                                                <td>{{ $alum->programStudi->nama_prodi }}</td>
-                                                <td>{{ $alum->tahun_lulus }}</td>
+                                                <td>{{ $alum->programstudi->program_studi }}</td>
+                                                <td class="text-center">{{ $alum->tahun_lulus }}</td>
                                                 <td>
-                                                    <button wire:click="openEditModal({{ $alum->id }})"
-                                                        class="btn btn-warning btn-sm">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                    <button wire:click="confirmDelete({{ $alum->id }})"
-                                                        class="btn btn-danger btn-sm">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
+                                                    <div class="btn-group btn-group-sm" role="group">
+                                                        <button wire:click="openEditModal({{ $alum->id }})"
+                                                            class="btn btn-warning" title="Edit Data">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button wire:click="confirmDelete({{ $alum->id }})"
+                                                            class="btn btn-danger" title="Hapus Data">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="6" class="text-center">Tidak ada data</td>
+                                                <td colspan="6" class="text-center text-muted py-4">
+                                                    <i class="fas fa-exclamation-triangle mr-2"></i> Tidak ada data
+                                                    alumni yang ditemukan.
+                                                </td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -115,10 +124,21 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <label>NIK <span class="text-danger">*</span></label>
+                                    <input type="text" wire:model="nik"
+                                        class="form-control @error('nik') is-invalid @enderror"
+                                        placeholder="Contoh: 1111222233333">
+                                    @error('nik')
+                                        <span class="invalid-feedback">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
                                     <label>NIM <span class="text-danger">*</span></label>
                                     <input type="text" wire:model="nim"
                                         class="form-control @error('nim') is-invalid @enderror"
-                                        placeholder="Contoh: 1234567890">
+                                        placeholder="Contoh: 123123">
                                     @error('nim')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
@@ -136,40 +156,23 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Jenis Kelamin <span class="text-danger">*</span></label>
-                                    <select wire:model="jenis_kelamin"
-                                        class="form-control @error('jenis_kelamin') is-invalid @enderror">
-                                        <option value="">Pilih Jenis Kelamin</option>
-                                        <option value="L">Laki-laki</option>
-                                        <option value="P">Perempuan</option>
-                                    </select>
-                                    @error('jenis_kelamin')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Program Studi <span class="text-danger">*</span></label>
-                                    <select wire:model="program_studi_id"
-                                        class="form-control @error('program_studi_id') is-invalid @enderror">
+                                    <select wire:model="kodeprodi"
+                                        class="form-control @error('kodeprodi') is-invalid @enderror">
                                         <option value="">Pilih Program Studi</option>
                                         @foreach ($programStudi as $prodi)
-                                            <option value="{{ $prodi->id }}">{{ $prodi->nama_prodi }}</option>
+                                            <option value="{{ $prodi->kode_program_studi }}">
+                                                {{ $prodi->program_studi }}</option>
                                         @endforeach
                                     </select>
-                                    @error('program_studi_id')
+                                    @error('kodeprodi')
                                         <span class="invalid-feedback">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Tempat Lahir <span class="text-danger">*</span></label>
@@ -181,6 +184,8 @@
                                     @enderror
                                 </div>
                             </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Tanggal Lahir <span class="text-danger">*</span></label>
@@ -191,9 +196,6 @@
                                     @enderror
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>No. HP</label>
@@ -205,6 +207,8 @@
                                     @enderror
                                 </div>
                             </div>
+                        </div>
+                        <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Email</label>
@@ -216,9 +220,6 @@
                                     @enderror
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Tahun Lulus <span class="text-danger">*</span></label>
@@ -230,27 +231,8 @@
                                     @enderror
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>IPK</label>
-                                    <input type="number" step="0.01" min="0" max="4"
-                                        wire:model="ipk" class="form-control @error('ipk') is-invalid @enderror"
-                                        placeholder="Contoh: 3.75">
-                                    @error('ipk')
-                                        <span class="invalid-feedback">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
                         </div>
 
-                        <div class="form-group">
-                            <label>Alamat</label>
-                            <textarea wire:model="alamat" class="form-control @error('alamat') is-invalid @enderror" rows="3"
-                                placeholder="Alamat lengkap"></textarea>
-                            @error('alamat')
-                                <span class="invalid-feedback">{{ $message }}</span>
-                            @enderror
-                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
@@ -284,6 +266,60 @@
         </div>
     </div>
 
+    <!-- Modal Import -->
+    <div class="modal fade" id="importModal" tabindex="-1" wire:ignore.self>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Import Alumni</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <form wire:submit.prevent="import">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Pilih File Excel <span class="text-danger">*</span></label>
+                            <input type="file" wire:model="importFile"
+                                class="form-control @error('importFile') is-invalid @enderror" accept=".xlsx,.xls">
+
+                            <!-- Loading Indicator -->
+                            <div wire:loading wire:target="importFile" class="text-info mt-2">
+                                <i class="fas fa-spinner fa-spin"></i> Mengupload file...
+                            </div>
+
+                            @error('importFile')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                            <small class="form-text text-muted">
+                                File harus berformat .xlsx atau .xls
+                            </small>
+                        </div>
+
+                        <!-- Preview nama file -->
+                        @if ($importFile)
+                            <div class="alert alert-info">
+                                <strong>File:</strong> {{ $importFile->getClientOriginalName() }}
+                            </div>
+                        @endif
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-success" wire:loading.attr="disabled"
+                            wire:target="import">
+                            <span wire:loading.remove wire:target="import">
+                                <i class="fas fa-upload"></i> Import
+                            </span>
+                            <span wire:loading wire:target="import">
+                                <i class="fas fa-spinner fa-spin"></i> Mengimpor...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     @push('footer')
         <script>
             document.addEventListener('livewire:init', () => {
@@ -301,6 +337,14 @@
 
                 Livewire.on('hide-delete-modal', () => {
                     $('#deleteModal').modal('hide');
+                });
+
+                Livewire.on('show-import-modal', () => {
+                    $('#importModal').modal('show');
+                });
+
+                Livewire.on('hide-import-modal', () => {
+                    $('#importModal').modal('hide');
                 });
             });
         </script>
